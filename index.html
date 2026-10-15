@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeeves — Propuesta Argentina · Pickit</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #C9A84C; --gold-light: #E8C96A; --gold-pale: #FDF3D7;
+      --dark: #0A0A0A; --dark2: #141414; --dark3: #1E1E1E;
+      --gray: #6B7280; --gray-light: #9CA3AF;
+      --white: #FFFFFF; --off-white: #F9F9F7;
+      --border: rgba(255,255,255,0.08);
+      --pk: #00B67A;
+      --radius: 16px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Helvetica, Arial, sans-serif;
+      background: var(--off-white); color: #111; line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; }
+    h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.025em; }
+    h3 { font-size: 1.25rem; font-weight: 700; }
+    h4 { font-size: 1rem; font-weight: 600; }
+    p { color: #444; }
+    em { font-style: normal; color: var(--gold); }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid #E5E7EB; padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between; height: 64px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 1rem; }
+    .jeeves-logo {
+      font-size: 1.3rem; font-weight: 900; letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #0A0A0A 0%, #444 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-divider { width: 1px; height: 24px; background: #D1D5DB; }
+    .nav-client { font-size: 0.9rem; font-weight: 800; color: var(--pk); letter-spacing: 0.01em; }
+    .nav-links { display: flex; gap: 0.5rem; }
+    .nav-links a { font-size: 0.8rem; font-weight: 500; color: #555; text-decoration: none; padding: 0.4rem 0.75rem; border-radius: 6px; transition: all 0.2s; }
+    .nav-links a:hover { background: #F3F4F6; color: #111; }
+    .nav-cta { background: var(--dark); color: var(--white); font-size: 0.82rem; font-weight: 600; padding: 0.5rem 1.1rem; border-radius: 8px; text-decoration: none; }
+    .nav-cta:hover { background: #333; }
+
+    .section { padding: 6rem 2rem; }
+    .section.dark { background: var(--dark); color: var(--white); }
+    .section.dark p { color: var(--gray-light); }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid rgba(201,168,76,0.3);
+      padding: 0.35rem 0.85rem; border-radius: 999px; margin-bottom: 1.25rem;
+    }
+    .section-badge.light { background: rgba(201,168,76,0.08); }
+
+    #sec-hero { background: var(--dark); padding: 6rem 2rem 5rem; color: var(--white); position: relative; overflow: hidden; }
+    #sec-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 80% 50%, rgba(201,168,76,0.12) 0%, transparent 70%); pointer-events: none; }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; position: relative; }
+    .hero-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+    .hero-title { color: var(--white); margin-bottom: 1.25rem; }
+    .hero-subtitle { font-size: 1.08rem; color: #9CA3AF; margin-bottom: 2.5rem; line-height: 1.7; }
+    .hero-stats { display: flex; gap: 2rem; margin-top: 2.5rem; flex-wrap: wrap; }
+    .hero-stat .num { font-size: 2rem; font-weight: 900; color: var(--gold); letter-spacing: -0.03em; }
+    .hero-stat .lbl { font-size: 0.75rem; color: #6B7280; font-weight: 500; margin-top: 0.15rem; }
+    .hero-cta-group { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+    .btn-primary { background: var(--gold); color: var(--dark); font-weight: 700; font-size: 0.9rem; padding: 0.85rem 1.8rem; border-radius: 10px; text-decoration: none; transition: all 0.2s; display: inline-block; }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .btn-ghost { color: var(--gray-light); font-weight: 500; font-size: 0.9rem; text-decoration: none; }
+    .btn-ghost:hover { color: var(--white); }
+
+    .hero-visual { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+    .jcard {
+      width: 100%; max-width: 470px; aspect-ratio: 1.586; border-radius: 24px; padding: 1.9rem 2.1rem;
+      background: linear-gradient(125deg, #0D0D0D 0%, #1B1B1B 48%, #2B2412 100%);
+      border: 1px solid rgba(201,168,76,0.35);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.55);
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: space-between; transform: rotate(-2.5deg);
+    }
+    .jcard::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 55% 70% at 82% 12%, rgba(201,168,76,0.22) 0%, transparent 65%); pointer-events: none; }
+    .jcard-top, .jcard-bottom { display: flex; justify-content: space-between; position: relative; }
+    .jcard-top { align-items: flex-start; }
+    .jcard-bottom { align-items: flex-end; }
+    .jcard-logo { font-size: 1.45rem; font-weight: 900; letter-spacing: -0.04em; color: var(--white); }
+    .jcard-tag { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(201,168,76,0.45); padding: 0.32rem 0.8rem; border-radius: 999px; }
+    .jcard-chip { width: 48px; height: 36px; border-radius: 7px; background: linear-gradient(135deg, #E8C96A 0%, #C9A84C 45%, #9A7B32 100%); position: relative; }
+    .jcard-number { font-size: clamp(1.05rem, 2.2vw, 1.35rem); font-weight: 600; color: #E5E7EB; letter-spacing: 0.14em; position: relative; }
+    .jcard .lbl { font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase; color: #6B7280; margin-bottom: 0.2rem; }
+    .jcard .val { font-size: 0.9rem; font-weight: 700; color: var(--white); letter-spacing: 0.08em; text-transform: uppercase; }
+    .jcard-visa { font-size: 1.3rem; font-weight: 900; font-style: italic; color: var(--gold); letter-spacing: 0.02em; }
+    .jcard-caption { font-size: 0.78rem; color: #6B7280; text-align: center; }
+    .jcard-caption strong { color: var(--gold); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+    .feat-card { background: var(--dark3); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem; }
+    .feat-card-light { background: var(--white); border: 1px solid #E5E7EB; border-radius: var(--radius); padding: 1.75rem; }
+    .feat-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .feat-card h4 { font-weight: 700; color: var(--white); margin-bottom: 0.5rem; }
+    .feat-card p, .feat-card-light p { font-size: 0.85rem; line-height: 1.65; }
+    .feat-card-light h4 { font-weight: 700; color: #111; margin-bottom: 0.5rem; }
+    .feat-card-light p { color: #555; }
+
+    .sec-header { margin-bottom: 3rem; }
+    .sec-header p { font-size: 1.05rem; margin-top: 0.75rem; max-width: 680px; }
+    .sec-header.center { text-align: center; }
+    .sec-header.center p { margin-left: auto; margin-right: auto; }
+
+    /* Scenario cards */
+    .scen { border-radius: var(--radius); padding: 1.75rem; border: 1px solid var(--border); background: var(--dark3); display: flex; flex-direction: column; }
+    .scen.win { border-color: rgba(201,168,76,0.55); background: linear-gradient(160deg, #2A2412 0%, #1E1E1E 60%); box-shadow: 0 0 0 1px rgba(201,168,76,0.15), 0 20px 40px rgba(0,0,0,0.35); }
+    .scen-tag { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #9CA3AF; margin-bottom: 0.6rem; }
+    .scen.win .scen-tag { color: var(--gold); }
+    .scen h4 { color: var(--white); font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; }
+    .scen ol { list-style: none; counter-reset: s; margin-bottom: 1.25rem; }
+    .scen ol li { counter-increment: s; font-size: 0.84rem; color: #D1D5DB; padding: 0.35rem 0 0.35rem 1.9rem; position: relative; }
+    .scen ol li::before { content: counter(s); position: absolute; left: 0; top: 0.4rem; width: 1.3rem; height: 1.3rem; border-radius: 50%; background: rgba(255,255,255,0.08); color: #9CA3AF; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .scen.win ol li::before { background: rgba(201,168,76,0.2); color: var(--gold); }
+    .scen-result { margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08); }
+    .scen-result .k { font-size: 0.72rem; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.06em; }
+    .scen-result .v { font-size: 1.35rem; font-weight: 900; letter-spacing: -0.02em; color: var(--white); }
+    .scen.win .scen-result .v { color: var(--gold); }
+    .scen-result .s { font-size: 0.78rem; color: #6B7280; }
+
+    .compare-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+    .compare-table th { padding: 1rem 1.25rem; text-align: left; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #9CA3AF; border-bottom: 1px solid var(--border); }
+    .compare-table th:not(:first-child), .compare-table td:not(:first-child) { text-align: center; }
+    .compare-table td { padding: 1rem 1.25rem; font-size: 0.86rem; color: #D1D5DB; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+    .compare-table .col-jeeves { background: rgba(201,168,76,0.06); }
+    .compare-table th.col-jeeves { color: var(--gold); }
+    .check { color: #34D399; } .cross { color: #F87171; } .neutral { color: #9CA3AF; }
+    .table-wrap { overflow-x: auto; }
+
+    .calc-wrapper { background: var(--white); border-radius: 20px; border: 1px solid #E5E7EB; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+    .calc-header { background: var(--dark); padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .calc-header h3 { color: var(--white); font-size: 1rem; }
+    .calc-header .badge { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; background: rgba(201,168,76,0.2); color: var(--gold); border: 1px solid rgba(201,168,76,0.4); padding: 0.25rem 0.65rem; border-radius: 999px; }
+    .calc-body { padding: 2rem; }
+    .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .calc-section-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #E5E7EB; }
+    .calc-field { margin-bottom: 1.25rem; }
+    .calc-field label { font-size: 0.82rem; font-weight: 600; color: #374151; display: block; margin-bottom: 0.4rem; }
+    .calc-field .hint { font-size: 0.72rem; color: var(--gray); margin-top: 0.25rem; }
+    .calc-input-wrap { position: relative; }
+    .calc-input-wrap .prefix { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; font-weight: 600; color: var(--gray); }
+    .calc-input-wrap .suffix { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); font-size: 0.75rem; color: var(--gray); }
+    input[type="number"] { width: 100%; padding: 0.65rem 0.9rem; border: 1.5px solid #E5E7EB; border-radius: 8px; font-size: 0.9rem; font-family: inherit; background: #FAFAFA; color: #111; -moz-appearance: textfield; }
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type="number"]:focus { outline: none; border-color: var(--gold); background: #fff; }
+    .has-prefix input { padding-left: 2rem; }
+    .has-suffix input { padding-right: 4.5rem; }
+    .editable { background: #FFFBEF !important; border-color: #E8C96A !important; }
+    .calc-results { background: var(--dark); border-radius: 14px; padding: 1.75rem; }
+    .calc-results h4 { color: var(--white); margin-bottom: 1rem; font-size: 0.95rem; }
+    .result-group { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B7280; margin-top: 1rem; }
+    .result-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .result-label { font-size: 0.82rem; color: #9CA3AF; }
+    .result-value { font-size: 0.9rem; font-weight: 700; color: var(--white); white-space: nowrap; text-align: right; }
+    .result-row.highlight { background: rgba(201,168,76,0.1); margin: 0.75rem -1rem 0; padding: 0.85rem 1rem; border-radius: 8px; border: none; }
+    .result-row.highlight .result-label { color: var(--gold); font-weight: 600; }
+    .result-row.highlight .result-value { color: var(--gold); font-size: 1.15rem; }
+    .pos { color: #34D399 !important; } .negv { color: #F87171 !important; }
+
+    .banner { background: linear-gradient(90deg, rgba(201,168,76,0.12) 0%, rgba(201,168,76,0.04) 100%); border: 1px solid rgba(201,168,76,0.2); border-radius: var(--radius); padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+    .banner-icon { font-size: 2rem; }
+    .banner-text { flex: 1; min-width: 240px; }
+    .banner-text h4 { color: #111; margin-bottom: 0.25rem; }
+    .banner-text p { font-size: 0.86rem; color: #555; }
+
+    #sec-cta { background: var(--dark); padding: 6rem 2rem; }
+    .cta-card { background: linear-gradient(135deg, #1A1A1A 0%, #222 100%); border: 1px solid rgba(201,168,76,0.2); border-radius: 24px; padding: 4rem; text-align: center; position: relative; overflow: hidden; }
+    .cta-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(201,168,76,0.1) 0%, transparent 70%); }
+    .cta-card > * { position: relative; z-index: 1; }
+    .cta-card h2 { color: var(--white); }
+    .cta-card p { color: #9CA3AF; font-size: 1.02rem; margin-top: 0.75rem; max-width: 720px; margin-left: auto; margin-right: auto; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.5rem; text-align: left; }
+    .step { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.25rem; }
+    .step .n { font-size: 0.7rem; font-weight: 800; color: var(--gold); letter-spacing: 0.1em; }
+    .step h4 { color: var(--white); font-size: 0.95rem; margin: 0.3rem 0; }
+    .step p { font-size: 0.8rem !important; margin: 0 !important; color: #9CA3AF; }
+    .contact-card { display: inline-flex; align-items: center; gap: 1.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem 2.5rem; margin-top: 2.5rem; }
+    .contact-avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, #E8A84C 100%); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 900; color: var(--dark); flex-shrink: 0; }
+    .contact-info { text-align: left; }
+    .contact-info .name { font-size: 1rem; font-weight: 700; color: var(--white); }
+    .contact-info .role { font-size: 0.8rem; color: #9CA3AF; margin-top: 0.1rem; }
+    .contact-info .email { font-size: 0.82rem; color: var(--gold); margin-top: 0.3rem; }
+    .cta-buttons { display: flex; gap: 1rem; justify-content: center; margin-top: 1.75rem; }
+
+    footer { background: var(--dark); border-top: 1px solid rgba(255,255,255,0.06); padding: 2rem; text-align: center; }
+    footer p { font-size: 0.78rem; color: #6B7280; }
+    footer strong { color: #9CA3AF; }
+    .mt-3 { margin-top: 1.5rem; } .mt-4 { margin-top: 2.5rem; }
+    .text-gold { color: var(--gold); } .font-bold { font-weight: 700; }
+
+    @media (max-width: 860px) {
+      .hero-grid, .grid-2, .calc-grid, .grid-3, .steps { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .grid-4 > div { min-width: 0; padding: 1rem !important; }
+      .grid-4 > div > div:first-child { font-size: 1.5rem !important; }
+      nav { padding: 0 1rem; }
+      .nav-links { display: none; }
+      .section, #sec-hero, #sec-cta { padding-left: 1rem; padding-right: 1rem; }
+      .cta-card { padding: 2.5rem 1.25rem; }
+      .contact-card { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav>
+  <div class="nav-brand">
+    <span class="jeeves-logo">Jeeves</span>
+    <div class="nav-divider"></div>
+    <span class="nav-client">Pickit</span>
+  </div>
+  <div class="nav-links">
+    <a href="#sec-fondeo">Fondeo en USD</a>
+    <a href="#sec-tarjetas">Tarjetas</a>
+    <a href="#sec-calc">Calculadora</a>
+    <a href="#sec-futuro">Cobranzas internacionales</a>
+  </div>
+  <a href="#sec-cta" class="nav-cta">Próximos pasos →</a>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section id="sec-hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-label">Jeeves × Pickit · Propuesta Argentina 2026</div>
+        <h1 class="hero-title">
+          El mismo dólar MEP de hoy,<br>
+          <em>con 2% de vuelta en cada pago.</em>
+        </h1>
+        <p class="hero-subtitle">
+          Pickit ya resolvió bien sus pagos en dólares: compra MEP y paga la tarjeta corporativa en USD, sin percepción. Jeeves no te pide cambiar eso. Seguís comprando MEP como hoy, fondeás tu cuenta Jeeves directamente en USD y pagás tus servicios tecnológicos con tarjetas Visa corporativas que te devuelven <strong style="color:#E5E7EB;">2% de cashback</strong> mes a mes, con control total por proveedor.
+        </p>
+        <div class="hero-cta-group">
+          <a href="#sec-calc" class="btn-primary">Calculá tu ahorro →</a>
+          <a href="#sec-cta" class="btn-ghost">Contactar a María ↓</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="num">2%</div><div class="lbl">Cashback mensual en USD</div></div>
+          <div class="hero-stat"><div class="num">US$0</div><div class="lbl">Comisión por transacción</div></div>
+          <div class="hero-stat"><div class="num">∞</div><div class="lbl">Tarjetas virtuales sin costo</div></div>
+          <div class="hero-stat"><div class="num">0%</div><div class="lbl">Percepciones · emisión en EE.UU.</div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="jcard">
+          <div class="jcard-top">
+            <span class="jcard-logo">Jeeves</span>
+            <span class="jcard-tag">Corporate</span>
+          </div>
+          <div class="jcard-chip"></div>
+          <div class="jcard-number">4859 &nbsp;••••&nbsp; •••• &nbsp;2538</div>
+          <div class="jcard-bottom">
+            <div>
+              <div class="lbl">Card Holder</div>
+              <div class="val">Javier Costas</div>
+            </div>
+            <div>
+              <div class="lbl">Empresa</div>
+              <div class="val" style="color: var(--pk);">Pickit</div>
+            </div>
+            <div class="jcard-visa">VISA</div>
+          </div>
+        </div>
+        <p class="jcard-caption">Tarjeta corporativa <strong>Jeeves Visa</strong> · Emitida en EE.UU. · Saldo en USD a nombre de Pickit</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ① FONDEO EN USD ═══════════════ -->
+<section id="sec-fondeo" class="section dark">
+  <div class="container">
+    <div class="sec-header">
+      <div class="section-badge">① Lo que conversamos · El tipo de cambio</div>
+      <h2>Si el cambio no compite,<br><em>no lo uses: fondeá en dólares.</em></h2>
+      <p>Javier lo planteó claro: fondear en pesos a un tipo de cambio cercano al cripto (≈2–4 puntos arriba del MEP) prácticamente se come el 2% de cashback. Por eso la propuesta no pasa por cambiar cómo Pickit compra sus dólares, sino por <strong style="color:#E5E7EB;">dónde los usa</strong>.</p>
+    </div>
+
+    <div class="grid-3">
+      <div class="scen">
+        <div class="scen-tag">Hoy</div>
+        <h4>MEP + tarjeta bancaria</h4>
+        <ol>
+          <li>Pickit compra dólar MEP</li>
+          <li>Paga el resumen de la tarjeta corporativa en USD (sin percepción)</li>
+          <li>Paga servicios tecnológicos con esa tarjeta</li>
+        </ol>
+        <div class="scen-result">
+          <div class="k">Retorno sobre el gasto</div>
+          <div class="v">0%</div>
+          <div class="s">Sin cashback · conciliación manual</div>
+        </div>
+      </div>
+      <div class="scen">
+        <div class="scen-tag">Alternativa descartada</div>
+        <h4>Jeeves fondeado en ARS</h4>
+        <ol>
+          <li>Pickit transfiere pesos a un CVU a su nombre</li>
+          <li>Se acreditan USD casi al instante, a un tipo de cambio entre cripto y MEP</li>
+          <li>Paga con tarjeta Jeeves y recibe 2% de cashback</li>
+        </ol>
+        <div class="scen-result">
+          <div class="k">Resultado neto vs. hoy</div>
+          <div class="v">≈ Neutro</div>
+          <div class="s">La brecha de cambio compensa el cashback</div>
+        </div>
+      </div>
+      <div class="scen win">
+        <div class="scen-tag">★ Propuesta para Pickit</div>
+        <h4>Jeeves fondeado en USD</h4>
+        <ol>
+          <li>Pickit sigue comprando dólar MEP, igual que hoy</li>
+          <li>Fondea su cuenta Jeeves (a nombre de Pickit) directamente en USD</li>
+          <li>Paga AWS, SaaS y proveedores tech con tarjetas Jeeves</li>
+          <li>Recibe 2% de cashback mes vencido, como saldo en USD</li>
+        </ol>
+        <div class="scen-result">
+          <div class="k">Resultado neto vs. hoy</div>
+          <div class="v">+2% sobre el gasto</div>
+          <div class="s">Mismo costo de dólar, sin brecha de cambio</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <div class="banner" style="background: rgba(201,168,76,0.08);">
+        <div class="banner-icon">💡</div>
+        <div class="banner-text">
+          <h4 style="color: var(--gold);">La clave: el cashback solo suma si el dólar entra al mismo costo</h4>
+          <p style="color: #9CA3AF;">Fondeando en USD, el tipo de cambio deja de ser parte de la ecuación: Pickit mantiene su costo MEP actual y el 2% de cashback es ahorro neto. Además, la cuenta y las tarjetas quedan siempre <strong style="color:#E5E7EB;">a nombre de Pickit</strong> (same-name account), lo que simplifica la operatoria y la trazabilidad.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 table-wrap">
+      <h3 style="color: var(--white); margin-bottom: 0.5rem;">Comparativa para los pagos en USD de Pickit</h3>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Criterio</th>
+            <th class="col-jeeves">Jeeves · fondeo en USD</th>
+            <th>Jeeves · fondeo en ARS</th>
+            <th>Hoy · tarjeta bancaria</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Costo del dólar</td>
+            <td class="col-jeeves text-gold font-bold">MEP (igual que hoy)</td>
+            <td>Entre cripto y MEP (≈2–4 pts arriba)</td>
+            <td>MEP</td>
+          </tr>
+          <tr>
+            <td>Percepciones</td>
+            <td class="col-jeeves"><span class="check">✓</span> No aplican</td>
+            <td><span class="check">✓</span> No aplican</td>
+            <td><span class="check">✓</span> Evitadas pagando en USD</td>
+          </tr>
+          <tr>
+            <td>Cashback sobre el gasto</td>
+            <td class="col-jeeves text-gold font-bold">2% en USD, mes vencido</td>
+            <td>2% en USD, mes vencido</td>
+            <td><span class="cross">✗</span></td>
+          </tr>
+          <tr>
+            <td>Resultado neto</td>
+            <td class="col-jeeves text-gold font-bold">+2% del gasto</td>
+            <td><span class="neutral">≈ 0%</span></td>
+            <td>Base</td>
+          </tr>
+          <tr>
+            <td>Comisión por transacción / FX en USD</td>
+            <td class="col-jeeves"><span class="check">✓</span> Sin comisión</td>
+            <td><span class="check">✓</span> Sin comisión</td>
+            <td><span class="neutral">~</span> Según banco</td>
+          </tr>
+          <tr>
+            <td>Tarjeta por proveedor (AWS, SaaS…)</td>
+            <td class="col-jeeves"><span class="check">✓</span> Virtuales ilimitadas, sin costo</td>
+            <td><span class="check">✓</span> Virtuales ilimitadas, sin costo</td>
+            <td><span class="cross">✗</span> Una o pocas tarjetas</td>
+          </tr>
+          <tr>
+            <td>Conciliación de fin de mes</td>
+            <td class="col-jeeves"><span class="check">✓</span> Automática, con comprobantes</td>
+            <td><span class="check">✓</span> Automática, con comprobantes</td>
+            <td><span class="cross">✗</span> Manual</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ② TARJETAS ═══════════════ -->
+<section id="sec-tarjetas" class="section">
+  <div class="container">
+    <div class="sec-header">
+      <div class="section-badge light">② Tarjetas Corporativas Jeeves</div>
+      <h2>Una tarjeta por proveedor,<br><em>control en tiempo real.</em></h2>
+      <p>Hoy todos los pagos en dólares de Pickit son servicios tecnológicos. Con Jeeves, cada proveedor puede tener su propia tarjeta virtual, con límite, categoría y responsable definidos, y el cargo recurrente pasa sin rebotes.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="feat-card-light">
+        <div class="feat-icon">💳</div>
+        <h4>Tarjetas Visa físicas y virtuales</h4>
+        <p>Tarjetas virtuales ilimitadas sin costo de emisión, y físicas para quien las necesite. 100% configurables: por persona, proyecto o proveedor; pausar, despausar y ajustar límites en un clic.</p>
+      </div>
+      <div class="feat-card-light">
+        <div class="feat-icon">🔁</div>
+        <h4>Cargos recurrentes sin rebotes</h4>
+        <p>Emitidas en EE.UU. con BIN estadounidense. Las tarjetas prefondeadas funcionan como cargo recurrente para AWS, Meta, Google Workspace y cualquier SaaS, siempre que haya saldo disponible.</p>
+      </div>
+      <div class="feat-card-light">
+        <div class="feat-icon">🏦</div>
+        <h4>Prefondeo o línea de crédito</h4>
+        <p>Pueden operar con saldo prefondeado (sin resumen que pagar) o solicitar una línea de crédito: el equipo de Riesgo de Jeeves evalúa el perfil de Pickit y define el límite. Ustedes eligen el modelo.</p>
+      </div>
+      <div class="feat-card-light">
+        <div class="feat-icon">📊</div>
+        <h4>Conciliación y reportería</h4>
+        <p>Cada consumo con su comprobante, categoría y centro de costos. Reportes por fecha, área y usuario, y exportación a su sistema contable para cerrar el mes sin planillas.</p>
+      </div>
+    </div>
+
+    <!-- Live purchase demo -->
+    <div class="mt-4" style="background: #0A0A0A; border-radius: 20px; padding: 2rem; border: 1px solid #222;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem;">
+        <span style="font-size: 0.7rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.1em;">Compra aprobada · ejemplo</span>
+        <span style="font-size: 0.7rem; color: #34D399; font-weight: 700;">● CONFIRMADA</span>
+      </div>
+      <div style="font-size: 2.4rem; font-weight: 900; color: white; letter-spacing: -0.04em;">USD 4,200.00<span style="color: var(--gold); font-size: 1rem; font-weight: 700; margin-left: 0.5rem;">AWS · Infraestructura cloud</span></div>
+      <div style="font-size: 0.82rem; color: #6B7280; margin-top: 0.3rem;">Tarjeta virtual #AWS-Prod · Titular: Pickit · Centro de costos: Tecnología</div>
+      <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap;">
+        <span style="font-size: 0.78rem; background: rgba(52,211,153,0.1); color: #34D399; border: 1px solid rgba(52,211,153,0.2); padding: 0.4rem 0.9rem; border-radius: 999px;">✓ Saldo USD fondeado con MEP</span>
+        <span style="font-size: 0.78rem; background: rgba(52,211,153,0.1); color: #34D399; border: 1px solid rgba(52,211,153,0.2); padding: 0.4rem 0.9rem; border-radius: 999px;">✓ Sin percepciones</span>
+        <span style="font-size: 0.78rem; background: rgba(201,168,76,0.1); color: var(--gold); border: 1px solid rgba(201,168,76,0.2); padding: 0.4rem 0.9rem; border-radius: 999px;">🎁 +USD 84 de cashback (2%)</span>
+        <span style="font-size: 0.78rem; background: rgba(99,102,241,0.1); color: #818CF8; border: 1px solid rgba(99,102,241,0.2); padding: 0.4rem 0.9rem; border-radius: 999px;">📎 Comprobante adjunto</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ③ CALCULADORA ═══════════════ -->
+<section id="sec-calc" class="section" style="background: #F3F4F6;">
+  <div class="container">
+    <div class="sec-header center">
+      <div class="section-badge light">③ Calculadora</div>
+      <h2>Los números de Pickit,<br><em>con total transparencia.</em></h2>
+      <p>Ingresá tu gasto mensual en servicios tecnológicos y las cotizaciones del día. La calculadora compara los dos esquemas de fondeo contra lo que Pickit paga hoy.</p>
+    </div>
+
+    <div class="calc-wrapper">
+      <div class="calc-header">
+        <h3>💰 Calculadora · Pickit × Jeeves</h3>
+        <span class="badge">Celdas en dorado = editables · Recalcula al instante</span>
+      </div>
+      <div class="calc-body">
+        <div class="calc-grid">
+          <div>
+            <div class="calc-section-title">💳 Gasto en USD</div>
+            <div class="calc-field">
+              <label>Gasto mensual en servicios tecnológicos</label>
+              <div class="calc-input-wrap has-prefix has-suffix">
+                <span class="prefix">$</span>
+                <input type="number" id="gasto" value="20000" step="500" class="editable" oninput="calcular()">
+                <span class="suffix">USD/mes</span>
+              </div>
+              <div class="hint">AWS, SaaS, licencias y demás pagos en dólares. Editá con el volumen real.</div>
+            </div>
+
+            <div class="calc-section-title" style="margin-top: 1.5rem;">💱 Tipo de cambio</div>
+            <div class="calc-field">
+              <label>Dólar MEP (punta vendedora)</label>
+              <div class="calc-input-wrap has-prefix has-suffix">
+                <span class="prefix">$</span>
+                <input type="number" id="mep" value="1540" step="5" class="editable" oninput="calcular()">
+                <span class="suffix">ARS/USD</span>
+              </div>
+              <div class="hint">Lo que Pickit paga hoy por cada dólar.</div>
+            </div>
+            <div class="calc-field">
+              <label>Tipo de cambio Jeeves fondeando en ARS</label>
+              <div class="calc-input-wrap has-prefix has-suffix">
+                <span class="prefix">$</span>
+                <input type="number" id="tcj" value="1585" step="5" class="editable" oninput="calcular()">
+                <span class="suffix">ARS/USD</span>
+              </div>
+              <div class="hint">Referencia conversada en la reunión. Solo aplica al esquema en pesos.</div>
+            </div>
+
+            <div class="calc-section-title" style="margin-top: 1.5rem;">🎁 Cashback</div>
+            <div class="calc-field">
+              <label>Cashback sobre el gasto con tarjeta</label>
+              <div class="calc-input-wrap has-suffix">
+                <input type="number" id="cb" value="2" readonly style="background: #F3F4F6; color: #6B7280; cursor: default;">
+                <span class="suffix">% mensual</span>
+              </div>
+              <div class="hint">Acreditado mes vencido como saldo positivo en USD.</div>
+            </div>
+            <div class="calc-field">
+              <label>Meses de cashback a proyectar</label>
+              <div class="calc-input-wrap has-suffix">
+                <input type="number" id="meses" value="3" step="1" min="1" max="12" class="editable" oninput="calcular()">
+                <span class="suffix">meses</span>
+              </div>
+              <div class="hint">Período promocional vigente para nuevas altas. Ajustable.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="calc-section-title">✅ Resultado mensual</div>
+            <div class="calc-results">
+              <h4>Comparativa por mes</h4>
+
+              <div class="result-row">
+                <span class="result-label">Hoy · costo en pesos (MEP)</span>
+                <span class="result-value" id="r_hoy">—</span>
+              </div>
+
+              <div class="result-group">Jeeves fondeado en ARS</div>
+              <div class="result-row">
+                <span class="result-label">Costo en pesos al tipo de cambio Jeeves</span>
+                <span class="result-value" id="r_ars_costo">—</span>
+              </div>
+              <div class="result-row">
+                <span class="result-label">Brecha de cambio vs. MEP</span>
+                <span class="result-value negv" id="r_ars_brecha">—</span>
+              </div>
+              <div class="result-row">
+                <span class="result-label">Cashback 2%</span>
+                <span class="result-value pos" id="r_ars_cb">—</span>
+              </div>
+              <div class="result-row">
+                <span class="result-label">Resultado neto vs. hoy</span>
+                <span class="result-value" id="r_ars_neto">—</span>
+              </div>
+
+              <div class="result-group" style="color: var(--gold);">★ Jeeves fondeado en USD (MEP)</div>
+              <div class="result-row">
+                <span class="result-label">Costo en pesos (mismo MEP de hoy)</span>
+                <span class="result-value" id="r_usd_costo">—</span>
+              </div>
+              <div class="result-row">
+                <span class="result-label">Brecha de cambio vs. MEP</span>
+                <span class="result-value pos">US$ 0</span>
+              </div>
+              <div class="result-row">
+                <span class="result-label">Cashback 2%</span>
+                <span class="result-value pos" id="r_usd_cb">—</span>
+              </div>
+
+              <div class="result-row highlight">
+                <span class="result-label">🏆 Ahorro neto mensual · fondeo USD</span>
+                <span class="result-value" id="r_usd_neto">—</span>
+              </div>
+              <div class="result-row highlight" style="margin-top: 0.5rem;">
+                <span class="result-label" id="r_periodo_lbl">🗓️ Ahorro en el período</span>
+                <span class="result-value" id="r_periodo">—</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 1.25rem; background: #F9F9F7; border: 1px solid #E5E7EB; border-radius: 12px; padding: 1.25rem;">
+              <p style="font-size: 0.75rem; color: #6B7280;">* Cálculos estimados con fines de análisis. Los tipos de cambio son referenciales y varían a diario; el tipo de cambio de fondeo en ARS se confirma al momento de cada operación. El cashback del 2% aplica sobre el volumen de pagos con tarjetas Jeeves, se acredita mes vencido como saldo en USD y está sujeto a las condiciones de la promoción vigente al momento del alta. Equivalencias en pesos calculadas al dólar MEP ingresado.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ④ FUTURO: COBRANZAS ═══════════════ -->
+<section id="sec-futuro" class="section dark">
+  <div class="container">
+    <div class="sec-header">
+      <div class="section-badge">④ Para cuando lo necesiten</div>
+      <h2>Cobrar desde el exterior,<br><em>sin sumar otra plataforma.</em></h2>
+      <p>Pickit factura localmente en cada país, pero a veces aparecen jugadores del exterior que no pueden pagarles localmente. Con la misma cuenta Jeeves, Pickit queda lista para recibir esos pagos el día que los necesite.</p>
+    </div>
+    <div class="grid-3">
+      <div class="feat-card">
+        <div class="feat-icon">🇺🇸</div>
+        <h4>Cuenta en EE.UU. a nombre de Pickit</h4>
+        <p>Recibí pagos del exterior en USD, en una cuenta a nombre de la sociedad — no de Jeeves. Transparencia total y same-name account, como piden los bancos en Argentina.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🌎</div>
+        <h4>Rieles locales en LatAm</h4>
+        <p>Cobros vía rieles locales en Argentina, Brasil, Colombia y México, además de EE.UU., Europa y Reino Unido. Siempre se acreditan como USD en la cuenta Jeeves.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🪙</div>
+        <h4>Crypto friendly</h4>
+        <p>Si algún cliente o socio opera con stablecoins (USDC/USDT), Pickit puede recibirlas y verlas acreditadas como dólares en su cuenta.</p>
+      </div>
+    </div>
+
+    <div class="grid-4 mt-4">
+      <div style="text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.04); border-radius: var(--radius); border: 1px solid var(--border);">
+        <div style="font-size: 2.1rem; font-weight: 900; color: var(--gold); letter-spacing: -0.04em;">+5K</div>
+        <div style="font-size: 0.78rem; color: #6B7280; margin-top: 0.3rem;">Empresas clientes</div>
+      </div>
+      <div style="text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.04); border-radius: var(--radius); border: 1px solid var(--border);">
+        <div style="font-size: 2.1rem; font-weight: 900; color: var(--gold); letter-spacing: -0.04em;">26</div>
+        <div style="font-size: 0.78rem; color: #6B7280; margin-top: 0.3rem;">Países</div>
+      </div>
+      <div style="text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.04); border-radius: var(--radius); border: 1px solid var(--border);">
+        <div style="font-size: 2.1rem; font-weight: 900; color: var(--gold); letter-spacing: -0.04em;">US$5B+</div>
+        <div style="font-size: 0.78rem; color: #6B7280; margin-top: 0.3rem;">Transaccionados</div>
+      </div>
+      <div style="text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.04); border-radius: var(--radius); border: 1px solid var(--border);">
+        <div style="font-size: 2.1rem; font-weight: 900; color: var(--gold); letter-spacing: -0.04em;">+US$380M</div>
+        <div style="font-size: 0.78rem; color: #6B7280; margin-top: 0.3rem;">Capital levantado · YC, a16z, Tencent</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section id="sec-cta">
+  <div class="container">
+    <div class="cta-card">
+      <div class="section-badge" style="background: rgba(201,168,76,0.15); border-color: rgba(201,168,76,0.3);">Próximos pasos</div>
+      <h2>Javier, probémoslo con un proveedor.</h2>
+      <p>La forma más simple de validar el 2% es empezar chico: abrir la cuenta, fondear en USD con el MEP que ya compran y mover uno de los servicios tecnológicos a una tarjeta virtual Jeeves. A fin de mes ven el cashback acreditado.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="n">PASO 1</div>
+          <h4>Alta de la cuenta</h4>
+          <p>Onboarding (KYB) de Pickit. Cuenta y tarjetas a nombre de la sociedad.</p>
+        </div>
+        <div class="step">
+          <div class="n">PASO 2</div>
+          <h4>Fondeo en USD</h4>
+          <p>Compran MEP como hoy y fondean su cuenta Jeeves en dólares.</p>
+        </div>
+        <div class="step">
+          <div class="n">PASO 3</div>
+          <h4>Primer proveedor</h4>
+          <p>Migran un cargo recurrente (ej. AWS) a una tarjeta virtual y miden el cashback.</p>
+        </div>
+      </div>
+
+      <div class="contact-card">
+        <div class="contact-avatar">MS</div>
+        <div class="contact-info">
+          <div class="name">María Sabatella Sanguinetti</div>
+          <div class="role">Jeeves Argentina</div>
+          <div class="email">maria.sanguinetti@tryjeeves.com</div>
+          <div class="email">+54 9 11 3079 3484</div>
+        </div>
+      </div>
+      <p style="font-size: 0.78rem; color: #9CA3AF; margin-top: 1rem;">Con el acompañamiento de <strong style="color: var(--gold);">James Burton</strong> · Jeeves</p>
+
+      <div class="cta-buttons">
+        <a href="mailto:maria.sanguinetti@tryjeeves.com?subject=Pickit%20%C3%97%20Jeeves%20%C2%B7%20Fondeo%20en%20USD&body=Hola%20Mar%C3%ADa%2C%20soy%20Javier%20Costas%20de%20Pickit.%20Me%20interesa%20avanzar%20con%20la%20cuenta%20Jeeves%20fondeada%20en%20USD%20y%20el%202%25%20de%20cashback%20en%20tarjetas."
+           class="btn-primary">✓ Contactar a María</a>
+      </div>
+      <p style="font-size: 0.75rem; color: #6B7280; margin-top: 1rem;">Se abrirá tu cliente de correo con un mensaje listo para María · maria.sanguinetti@tryjeeves.com</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>
+    <strong>Jeeves</strong> · tryjeeves.com · Propuesta Tarjetas Corporativas + Fondeo en USD · Pickit · Argentina<br>
+    <span style="margin-top: 0.3rem; display: inline-block;">Elaborado por María Sabatella Sanguinetti · Jeeves Argentina · Octubre 2026</span>
+  </p>
+</footer>
+
+<script>
+  const fUSD = n => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+  const fARS = n => '$ ' + new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 }).format(n);
+  const signed = (n, fmt) => (n >= 0 ? '+' : '−') + fmt(Math.abs(n));
+
+  function calcular() {
+    const g     = parseFloat(document.getElementById('gasto').value) || 0;
+    const mep   = parseFloat(document.getElementById('mep').value) || 1;
+    const tcj   = parseFloat(document.getElementById('tcj').value) || mep;
+    const meses = Math.max(1, Math.min(12, parseInt(document.getElementById('meses').value) || 1));
+    const CB    = 0.02;
+
+    const hoyARS    = g * mep;
+    const cbUSD     = g * CB;
+
+    // Fondeo ARS
+    const arsCosto  = g * tcj;
+    const brechaUSD = (arsCosto - hoyARS) / mep;      // costo extra expresado en USD MEP
+    const arsNeto   = cbUSD - brechaUSD;              // + = ahorro
+
+    // Fondeo USD
+    const usdNeto   = cbUSD;
+
+    document.getElementById('r_hoy').textContent        = fARS(hoyARS);
+    document.getElementById('r_ars_costo').textContent  = fARS(arsCosto);
+    document.getElementById('r_ars_brecha').textContent = signed(-brechaUSD, fUSD) + ' (' + ((tcj / mep - 1) * 100).toFixed(1).replace('.', ',') + '%)';
+    document.getElementById('r_ars_cb').textContent     = '+' + fUSD(cbUSD);
+    const arsEl = document.getElementById('r_ars_neto');
+    arsEl.textContent = signed(arsNeto, fUSD);
+    arsEl.className = 'result-value ' + (arsNeto >= 0 ? 'pos' : 'negv');
+
+    document.getElementById('r_usd_costo').textContent  = fARS(hoyARS);
+    document.getElementById('r_usd_cb').textContent     = '+' + fUSD(cbUSD);
+    document.getElementById('r_usd_neto').textContent   = '+' + fUSD(usdNeto) + ' · ' + fARS(usdNeto * mep);
+    document.getElementById('r_periodo_lbl').textContent = '🗓️ Ahorro en ' + meses + (meses === 1 ? ' mes' : ' meses') + ' · fondeo USD';
+    document.getElementById('r_periodo').textContent    = '+' + fUSD(usdNeto * meses);
+  }
+  calcular();
+</script>
+
+</body>
+</html>
